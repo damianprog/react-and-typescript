@@ -1,0 +1,77 @@
+question:
+prop types are... deprecated approach?
+
+
+Instruktor nie mówi „nie typuj propsów" — mówi „nie używaj PropTypes". To dwie różne rzeczy.
+
+PropTypes to runtime'owa walidacja z czasów przed TS:
+
+js
+NameTag.propTypes = { name: PropTypes.string, isOnline: PropTypes.bool };
+Sprawdzała typy dopiero w przeglądarce, w dev buildzie, przez console.error. Wyleciała z core React (osobna paczka prop-types), a w React 19 wsparcie usunięto całkowicie. TypeScript robi to samo lepiej i wcześniej — w edytorze. Więc tu ma rację: temat martwy.
+
+Type vs Interface
+
+z roku na rok stają się do siebie co raz bardziej podobne
+
+największa różnica polega na extending an interface or a type
+
+interface może rozszerzać nie tylko inny interaface ale również type
+
+rozszerzanie interface'ow:
+interface Employee {
+  name: string;
+  title: string;
+}
+interface NameTagProps extends Employee {
+  level: number;
+  isOnline: boolean;
+}
+
+ale jeśli to type ma rozszerzać type to wtedy składnia jest nieco inna:
+
+type Employee = {
+  name: string;
+  title: string;
+};
+type NameTagProps = Employee & {
+  level: number;
+  isOnline: boolean;
+};
+
+Nazywa to się Intersection
+
+Niuansem jest nadpisywanie rzeczy
+bo w interface nie można nadpisać pola innym typem
+a w intersection nie ma błedu kiedy się nadpisze
+
+type Employee = {
+  name: string;
+  title: string;
+  level: number;
+};
+type NameTagProps = Employee & {
+  level: number;
+  isOnline: boolean;
+};
+
+Another comparison: Interfaces can only describe object shapes and, if an interface is declared multiple times, then it merges with previous declarations.
+
+skonczone na quiz types vs interfaces
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
