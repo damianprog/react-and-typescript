@@ -62,6 +62,40 @@ skonczone na quiz types vs interfaces
 
 
 
+Sposoby na otypowanie children jakie przyjmuje react component
+children: React.ReactNode
+
+ale łatwiejsze do zapamiętania jest 
+
+{ children }: PropsWithChildren
+
+dzięki tym dwóm rozwiązniom react component może przyjmować:
+- zwykły string
+- HTML który nie jest nested
+- HTML element
+- więcej niz jeden element oraz zagnieżdżone elementy
+
+w zasadzie wszystko co może przyjąć react component
+
+PropsWithChildren automatically includes children as an OPTIONAL prop
+
+How can you make the children prop mandatory instead of optional when using custom prop types in React?
+
+Instead of using PropsWithChildren (which makes children optional with a question mark), you can manually define children in your type with the type React.ReactNode without the optional operator. For example: type BoxProps = { children: React.ReactNode; width: number; height: number; }
+
+skonczone na quiz Typing useState
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
