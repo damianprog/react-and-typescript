@@ -85,14 +85,16 @@ Instead of using PropsWithChildren (which makes children optional with a questio
 
 skonczone na quiz Typing useState
 
+Typing Events
+
+When pulling out an event handler function in React with TypeScript, what information does TypeScript require you to provide?
+
+TypeScript requires type hints for the event handler, such as specifying it as a ChangeEventHandler for an HTMLInputElement or a MouseEventHandler for a button element.
 
 
+What is the recommended approach to discover the correct type for a React event handler or state setter in TypeScript?
 
-
-
-
-
-
+Hover over the property or function to see its type definition, then copy that type information rather than trying to manually recreate it.
 
 
 
