@@ -1,5 +1,6 @@
 import { Card } from "$/common/components/card";
-import { useState, type Dispatch } from "react";
+import { useState, type ComponentPropsWithoutRef, type Dispatch } from "react";
+import { Button } from "./button";
 
 type CounterControlsProps = {
   setCount: Dispatch<React.SetStateAction<number>>;
@@ -8,44 +9,37 @@ type CounterControlsProps = {
 const CounterControls = ({ setCount }: CounterControlsProps) => {
   return (
     <div className="flex gap-2">
-      <button onClick={() => setCount((previous) => previous - 1)}>
+      <Button onClick={() => setCount((previous) => previous - 1)}>
         ➖ Decrement
-      </button>
-      <button onClick={() => setCount(0)}>🔁 Reset</button>
-      <button onClick={() => setCount((previous) => previous + 1)}>
+      </Button>
+      <Button onClick={() => setCount(0)}>🔁 Reset</Button>
+      <Button onClick={() => setCount((previous) => previous + 1)}>
         ➕ Increment
-      </button>
+      </Button>
     </div>
   );
 };
 
-type CounterFormProps = {
-  onFormSubmit: (count: number) => void;
-};
-
-const CounterForm = ({ onFormSubmit }: CounterFormProps) => {
+interface CounterFormProps extends ComponentPropsWithoutRef<"form"> {
+  layout?: "vertical" | "horizontal";
+}
+/**
+ *
+ * A special kind of form for counter operations
+ */
+const CounterForm = ({ onSubmit }: CounterFormProps) => {
   const [draftCount, setDraftCount] = useState(0);
-  const handleInputNumberChange: React.ChangeEventHandler<HTMLInputElement> = (
-    event,
-  ) =>
-    setDraftCount(
-      Number.isNaN(event.target.valueAsNumber) ? 0 : event.target.valueAsNumber,
-    );
-
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault();
-    onFormSubmit(draftCount);
-  };
 
   return (
-    <form className="flex items-center gap-2" onSubmit={handleSubmit}>
+    <form className="flex items-center gap-2" onSubmit={onSubmit}>
       <input
         className="ring-primary-600 focus:border-primary-800 rounded border border-slate-500 px-4 py-2 outline-none focus:ring-2"
         type="number"
-        onChange={handleInputNumberChange}
+        name="count"
+        onChange={(e) => setDraftCount(e.target.valueAsNumber)}
         value={draftCount}
       />
-      <button type="submit">Update Counter</button>
+      <Button type="submit">Update Counter</Button>
     </form>
   );
 };
@@ -53,16 +47,21 @@ const CounterForm = ({ onFormSubmit }: CounterFormProps) => {
 export const Counter = () => {
   const [count, setCount] = useState(0);
 
-  const onCounterFormSubmit = (draftCount: number) => {
-    setCount(draftCount);
-  };
-
   return (
     <Card className="border-primary-500 flex w-2/3 flex-col items-center gap-8">
       <h1>Days Since the Last Accident</h1>
       <p className="text-6xl">{count}</p>
       <CounterControls setCount={setCount} />
-      <CounterForm onFormSubmit={onCounterFormSubmit} />
+      <CounterForm
+        onSubmit={(e) => {
+          e.preventDefault();
+
+          const formData = new FormData(e.currentTarget);
+          const newCount = Number(formData.get("count"));
+
+          setCount(newCount);
+        }}
+      />
     </Card>
   );
 };

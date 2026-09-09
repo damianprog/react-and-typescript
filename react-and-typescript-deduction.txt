@@ -96,6 +96,38 @@ What is the recommended approach to discover the correct type for a React event 
 
 Hover over the property or function to see its type definition, then copy that type information rather than trying to manually recreate it.
 
+Skonczone na rozwiązaniu Typing Form Events Exercise
+
+Jeśli robimy component np. Button i chcemy żeby to był superset tego buttona który jest w standard HTML button czyli żeby miał wszystkie propsy jakie ma <button> element 
+to możemy skorzystać z ComponentPropsWithoutRef<"button" (albo "form")>
+
+What is the purpose of using ComponentPropsWithoutRef in React with TypeScript when creating custom components that wrap HTML elements?
+
+ComponentPropsWithoutRef allows you to automatically include all the attributes and props from a standard HTML element (like form, button, etc.) in your custom component without having to implement them one by one. This ensures your component supports all native HTML attributes, ARIA tags, event handlers, and other properties of the underlying element.
+
+How can you extend a custom component's props to include all the properties of an HTML form element using TypeScript?
+
+How can you extend a custom component's props to include all the properties of an HTML form element using TypeScript?
+
+Click to reveal answer
+You can use ComponentPropsWithoutRef with a generic type parameter specifying the HTML element. For example: ComponentPropsWithoutRef<'form'>. This can be used with an intersection type or by having an interface extend it: interface CounterFormProps extends ComponentPropsWithoutRef<'form'> { }
+
+What is the difference between ComponentProps and ComponentPropsWithoutRef in React TypeScript?
+
+ComponentPropsWithoutRef excludes the ref prop from the component's props, while ComponentProps includes it. ComponentPropsWithoutRef is often preferred because you can handle refs separately using forward ref, higher order components, and useImperativeHandle, giving you more control over ref behavior.
+
+skonczone na dokonczyc form żeby była taka sama jak instruktora
+
+
+
+
+
+
+
+
+
+
+
 
 
 
