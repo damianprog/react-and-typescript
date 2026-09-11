@@ -168,7 +168,7 @@ w wersji błędnej mówimy że cały obiekt propsów ma być funkcją ActionDisp
 a w wersji poprawnej że obiekt propsów ma mieć property "dispatch" pod którą leży funkcja ActionDispatch
 
 
-
+Discriminating union pattern is useful for reducers
 
 
 
