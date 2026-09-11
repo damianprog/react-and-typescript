@@ -119,6 +119,66 @@ ComponentPropsWithoutRef excludes the ref prop from the component's props, while
 skonczone na dokonczyc form żeby była taka sama jak instruktora
 
 
+How can you extend TypeScript types to add custom properties to an HTML element component while preserving all original element properties?
+
+
+You can use the intersection operator with ComponentPropsWithoutRef or similar utility types. For example, if you want to add a 'layout' property to a form component: ComponentPropsWithoutRef<'form'> & { layout?: 'vertical' | 'horizontal' }. This allows the component to accept all standard HTML form properties plus your custom property.
+
+
+
+
+Jeśli mamy sytauacje że nie znamy typu który powinien być w danym miejscu bo mogą być różne to lepiej zamiast any skorzystać z unknown
+unknown mówi "You need to check it first"
+
+What is the difference between using any and unknown as a type in TypeScript?
+
+any allows you to do whatever you want with a value without any type checking, causing everything it touches to become any. unknown requires you to perform runtime validation before you can use the value. With unknown, you must check the type (using typeof, instanceof, etc.) before TypeScript will allow you to perform operations on it.
+
+
+What is a Flux Standard Action and what is its typical structure?
+
+A Flux Standard Action is a convention used in Redux where an action is an object with a type property that contains a string, and a payload property that contains the data. It may also include properties like error or meta.
+
+
+What does the useReducer hook accept as arguments?
+
+The useReducer hook accepts a reducer function as the first argument (which takes the previous state and an action and returns the new state) and an initial state value as the second argument. It returns an array containing the current state and a dispatch function.
+
+
+Dlaczego w zadaniu z discriminated unions typescript pozwala na 
+
+interface DecrementAction extends Action {
+  type: "decrement";
+  payload: never; <------------------------
+}
+
+if (action.type === "decrement") {
+    const newCount = count - action.payload; <---------------------
+    return { count: newCount, draftCount: newCount };
+  }
+
+Wersja błędna:
+const CounterForm = ({ dispatch }: ActionDispatch<[action: CounterAction]>)
+
+Wersja poprawna:
+const CounterForm = ({ dispatch }: { dispatch: ActionDispatch<[action: CounterAction]> })
+
+w wersji błędnej mówimy że cały obiekt propsów ma być funkcją ActionDispatch
+
+a w wersji poprawnej że obiekt propsów ma mieć property "dispatch" pod którą leży funkcja ActionDispatch
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

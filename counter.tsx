@@ -1,6 +1,12 @@
 import { Card } from "$/common/components/card";
-import { useState, type ComponentPropsWithoutRef, type Dispatch } from "react";
+import {
+  useReducer,
+  useState,
+  type ComponentPropsWithoutRef,
+  type Dispatch,
+} from "react";
 import { Button } from "./button";
+import { counterReducer, initialState } from "./counter-reducer";
 
 type CounterControlsProps = {
   setCount: Dispatch<React.SetStateAction<number>>;
@@ -45,7 +51,9 @@ const CounterForm = ({ onSubmit }: CounterFormProps) => {
 };
 
 export const Counter = () => {
-  const [count, setCount] = useState(0);
+  const [count, dispatch] = useReducer(counterReducer, initialState);
+
+  dispatch({ type: "set-count", payload: 0 });
 
   return (
     <Card className="border-primary-500 flex w-2/3 flex-col items-center gap-8">
