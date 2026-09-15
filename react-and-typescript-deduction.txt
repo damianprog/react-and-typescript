@@ -170,20 +170,31 @@ a w wersji poprawnej że obiekt propsów ma mieć property "dispatch" pod któr�
 
 Discriminating union pattern is useful for reducers
 
+use() hook from react 19 is for resolving promises inside of a suspense suspender
+
+component will never render until this promise is resovled
+react fiber will pause it
+const article = use(fetchArticle(id));
+
+with this hook and zod validation we don't have to no longer worry about this value being null
+
+w parent komponencie:
+
+<Suspense fallback={<Loading />}>
+          <NewsArticle id={1} />
+          <NewsArticle id={2} />
+          <NewsArticle id={3} />
+          <NewsArticle id={4} />
+          <NewsArticle id={5} />
+        </Suspense>
+		
+use() hook działa z suspensem
 
 
 
+How does React Suspense handle components that contain unresolved promises?
 
-
-
-
-
-
-
-
-
-
-
+React Suspense suspends the component rendering when it encounters an unresolved promise. React Fiber will pause the component and display a fallback loading indicator until the promise resolves. The component will never actually render until all promises have resolved, ensuring data is always available when the component executes.
 
 
 
