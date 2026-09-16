@@ -197,6 +197,63 @@ How does React Suspense handle components that contain unresolved promises?
 React Suspense suspends the component rendering when it encounters an unresolved promise. React Fiber will pause the component and display a fallback loading indicator until the promise resolves. The component will never actually render until all promises have resolved, ensuring data is always available when the component executes.
 
 
+Kontekst będzie kształtu PlansContextType w tym przypadku array i 3 metody.
+3 metody dotyczą modyfikacji arraya z obiektami typu Plan.
+
+const [usePlans, PlansProviderRaw] = createBetterContext<PlansContextType>();
+
+export const createBetterContext = <T,>() => {
+  const Context = createContext<T | null>(null);
+
+dlaczego PlansContextType przekazany do createBetterContext miałby być null?
+
+chyba że to sie tyczy obiektu przekazanego w tym miejscu:
+PlansProviderRaw value={{ plans, createPlan, updatePlan, removePlan }}
+
+jeśli ten obiekt który ma być kształtu PlansContextType będzie nullem to rzucimy errorem więc mamy pewność że jeśli korzystamy z tego contextu to nie będzie on nullem.
+
+za każdym razem kiedy skorzystamy z usePlans korzystamy z funkcji która najpierw sprawdza czy context nie jest nullem i jeśli nie jest nullem to jest zwracany i można z niego korzystać bez potrzeby sprawdzania możliwości null w każdym komponencie w którym go będziemy używać.
+
+Back to Claude:
+
+PlansContextType nie jest null. T to czysty kształt: array i 3 metody. T | null to typ kontekstu, czyli wartości, którą może zwrócić React.useContext(Context). Ta wartość to albo T, albo null.
+
+Skąd bierze się null? Najczęściej nie z obiektu w value, bo tam zawsze podajesz pełny obiekt. Null pochodzi z wartości domyślnej:
+
+ts
+createContext<T | null>(null)
+//                      ^^^^ tę wartość dostaje komponent, który NIE ma Providera nad sobą
+
+useContext szuka w drzewie najbliższego Providera. Jeśli go nie znajdzie, zwraca wartość domyślną, czyli null.
+
+tsx
+// ✅ OK: usePlans() dostaje obiekt z value
+<PlansProvider>
+  <PlanList />
+</PlansProvider>
+
+// ❌ Brak Providera: useContext zwraca null, więc usePlans() rzuca błąd
+<PlanList />
+
+Po co w ogóle null jako domyślna wartość? Wracamy do problemu z początku lekcji. Przy createContext na poziomie modułu nie masz jeszcze plans ani metod, bo powstają w useState wewnątrz Providera. Nie masz więc sensownego T do podania, a null to uczciwe „jeszcze nic”.
+
+Poprawiona wersja Twojego zdania: jeśli komponent użyje usePlans poza PlansProvider, dostanie null i rzucimy błędem. Dzięki temu wszędzie, gdzie hook zwróci wartość, mamy pewność, że to PlansContextType.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
