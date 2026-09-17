@@ -46,3 +46,49 @@ const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
 ### Do przemyślenia
 
 `CounterControls` dostaje cały `setCount` — ten sam zarzut co w Luce 2, tylko lżejszy: dziecko może ustawić licznik na dowolną wartość. Alternatywa: `onIncrement` / `onDecrement` / `onReset`.
+
+## Context + TypeScript: `createBetterContext` (React and TypeScript v3, lekcja „Context Selector Types”)
+
+### Problem
+
+`createContext` wywołuje się na poziomie modułu, a prawdziwa wartość kontekstu (`plans` z `useState` i metody) powstaje dopiero w Providerze. TS wymaga typu i wartości domyślnej od razu. Są trzy wyjścia:
+
+1. `createContext<T | null>(null)`: uczciwe, ale sprawdzanie null w każdym konsumencie.
+2. `null as unknown as T`: hack, okłamujesz TS.
+3. Własny wrapper: `createContext<T | null>(null)` + hook, który rzuca błąd przy null (zawężanie typu przez `throw`), zwraca `T` i Provider jako krotkę (`as const`).
+
+### Rozwiązanie (wzorzec)
+
+```tsx
+export const createBetterContext = <T,>() => {
+  const Context = createContext<T | null>(null);
+  const useContext = () => {
+    const ctx = React.useContext(Context);
+    if (ctx === null) throw new Error("Brak Providera!");
+    return ctx; // T
+  };
+  return [useContext, Context.Provider] as const;
+};
+
+// poziom modułu, NIE wewnątrz komponentu
+const [usePlans, PlansProviderRaw] = createBetterContext<PlansContextType>();
+```
+
+### Co zrobiłem dobrze
+
+- Poprawnie przepiąłem `PlansProvider` na `PlansProviderRaw` i wyeksportowałem `usePlans`.
+- Zrozumiałem główną korzyść: null sprawdzany jest raz, w hooku, a konsument dostaje czysty `PlansContextType`.
+- Przy przejściu na opcję 3 pozbyłem się błędnego `createContext<X | null>(null as unknown as X)`. Hack z `| null` w generyku nic nie dawał.
+
+### Co poszło źle / luki
+
+- **brak złożenia:** nie wiedziałem, gdzie umieścić wywołanie `createBetterContext<...>()`. Klocki miałem (wrapper, Provider, hook), ale nie widziałem, że to zamiennik `const PlansContext = createContext(...)` na poziomie modułu.
+- **brak narzędzia:** źle wskazałem źródło null. Myślałem, że chodzi o obiekt przekazany w `value`. W rzeczywistości null to **wartość domyślna**, którą `useContext` zwraca, gdy nad komponentem **nie ma Providera**. `T` samo w sobie nigdy nie jest null, `T | null` to typ tego, co może zwrócić kontekst.
+
+### Do zapamiętania
+
+- `createContext(default)`: `default` trafia tylko do komponentów **bez Providera** nad sobą.
+- `throw` zawęża typ skuteczniej niż `return` (nie dokleja `undefined` do typu zwracanego).
+- `<T,>` w `.tsx`: przecinek, żeby parser nie wziął generyka za JSX.
+- `as const` na zwracanej tablicy daje krotkę `readonly [A, B]` zamiast `(A | B)[]`, tak jak w `useState`.
+- Kontekst tworzymy poza komponentem, inaczej powstaje nowy przy każdym renderze.
